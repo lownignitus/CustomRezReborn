@@ -573,12 +573,12 @@ CustomRez_channel = ""
 --core of it
 
 function CustomRez.OnEvent(frame,event,...)
-	local _, englishClass = UnitClass("player")
+	-[[local _, englishClass = UnitClass("player")
 	print(englishClass)
 	if englishClass ~= DRUID or englishClass ~= PALADIN or englishClass ~= PRIEST or englishClass ~= SHAMAN or englishClass ~= MONK then
 		-- Hide
 		CustomRezFrame:Hide()
-	end
+	end]]
 
 	local unitId, spell, rank, target = ...
 	--print(event)
