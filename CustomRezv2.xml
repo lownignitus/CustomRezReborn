@@ -1,0 +1,149 @@
+﻿<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd" xmlns="http://www.blizzard.com/wow/ui/">
+	<Frame framestrata="MEDIUM" name="CustomRezFrame" movable="true" frameStrata="MEDIUM" enableMouse="true">
+		<Size x="90" y="40" />
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+				<Offset x="372" y="-219" />
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true" />
+		<Frames>
+			<Button name="CrezSpeechButton" frameStrata="MEDIUM" enableMouse="true">
+				<Size>
+					<AbsDimension x="20" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="CustomRezFrame">
+						<Offset x="20" y="0" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp")
+					</OnLoad>
+					<OnClick>
+						CustomRez.SpeechButtonOnClick(self,button,down)
+					</OnClick>
+					<OnEnter>
+						CustomRez.ShowToolTip(self,2)
+					</OnEnter>
+					<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\BUTTONS\UI-GuildButton-MOTD-Up" />
+			</Button>
+			<Button name="CrezRandomToggleButton" inherits="" frameStrata="MEDIUM" enableMouse="true" text="">
+				<Size>
+					<AbsDimension x="20" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="CustomRezFrame">
+						<Offset x="40" y="0" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+							self:RegisterForClicks("LeftButtonDown")
+						</OnLoad>
+					<OnClick>
+					CustomRez.RandomToggleOnClick(self,button,down)
+						</OnClick>
+						<OnEnter>
+						CustomRez.ShowToolTip(self,3)
+					</OnEnter>
+					<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\BUTTONS\UI-GroupLoot-Dice-Up" />
+			</Button>
+			<Button name="CrezHideButton" frameStrata="MEDIUM" enableMouse="true">
+				<Size>
+					<AbsDimension x="20" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="CustomRezFrame">
+						<Offset x="60" y="0" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+							self:RegisterForClicks("LeftButtonUp")
+						</OnLoad>
+					<OnClick>
+					CustomRez.HideButtonOnClick(self,button,down)
+						</OnClick>
+						<OnEnter>
+						CustomRez.ShowToolTip(self,4)
+					</OnEnter>
+					<OnLeave>
+				GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\BUTTONS\UI-MinusButton-Up" />
+			</Button>
+			<Button name="CrezActivate" frameStrata="MEDIUM" enableMouse="true">
+				<Size>
+					<AbsDimension x="20" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="CustomRezFrame" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="0" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+							self:RegisterForClicks("LeftButtonUp")
+						</OnLoad>
+					<OnClick>
+							CustomRez.ActivationButtonOnClick(self,button,down)
+						</OnClick>
+						<OnEnter>
+						CustomRez.ShowToolTip(self,1)
+					</OnEnter>
+					<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\BUTTONS\UI-CheckBox-Check" />
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="FontString1" inherits="GameFontNormal" text="CustomRez">
+					<Size>
+						<AbsDimension x="80" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="0" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				CustomRez.OnLoad(self)
+			</OnLoad>
+			<OnEvent>
+				CustomRez.OnEvent(self,event,...)
+			</OnEvent>
+			<OnDragStart>
+				self:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing()
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+	<Frame name="CRezSpeechDropDownMenu" inherits="UIDropDownMenuTemplate" frameStrata="FULLSCREEN">
+		<Backdrop />
+		<Scripts>
+			<OnLoad>
+				CustomRez.SpeechDropDownOnLoad(self)
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>
