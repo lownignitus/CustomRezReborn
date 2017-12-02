@@ -1,12 +1,11 @@
 ## Interface: 70300
-## Title: CustomRez v2
-## Date: 
-## Notes: Rez Messages for Rezzers Reloaded
+## Title: CustomRezv2
 ## Author: LownIgnitus (Alexstrasza US)
-## Owner: Fannia (Lothar US)
-## Credits: Lomig (Kael'Thas EU/FR) & Tarcalion (Nagrand US/Oceanic) -> Necrosis ; Algarana - Rashgaroth ( EU - Alliance ) & Kaeldra of Aegwynn -> Serenity
 ## Version: v1.0.0
+## X-Date: 
+## X-Creator: Fannia (Lothar US)
+## X-Credits: Lomig (Kael'Thas EU/FR) & Tarcalion (Nagrand US/Oceanic) -> Necrosis ; Algarana - Rashgaroth ( EU - Alliance ) & Kaeldra of Aegwynn -> Serenity
+## Notes: Rez Messages for Rezzers Reloaded
 ## SavedVariablesPerCharacter: CustomRezVars
 
-CustomRezv2.lua
 CustomRezv2.xml

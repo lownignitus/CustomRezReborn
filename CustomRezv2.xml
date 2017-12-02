@@ -1,149 +1,209 @@
-﻿<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd" xmlns="http://www.blizzard.com/wow/ui/">
-	<Frame framestrata="MEDIUM" name="CustomRezFrame" movable="true" frameStrata="MEDIUM" enableMouse="true">
-		<Size x="90" y="40" />
-		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-				<Offset x="372" y="-219" />
-			</Anchor>
-		</Anchors>
+﻿
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<!-- Lua start -->
+	<Script file="CustomRezv2.lua"/> 
+
+	<!-- Main Frame -->
+	<Frame name="CustomRezFrame" frameStrata="BACKGROUND" movable="true" clampedToScreen="true" parent="UIParent">
+		<Size x="160" y="50" />
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true" />
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" />
+		</Anchors>
 		<Frames>
-			<Button name="CrezSpeechButton" frameStrata="MEDIUM" enableMouse="true">
-				<Size>
-					<AbsDimension x="20" y="20" />
-				</Size>
+			<!-- Top Level Frames -->
+
+			<!-- Title Frame -->
+			<Frame name="$parentTitle" frameStrata="BACKGROUND" parentKey="title">
+				<Size x="150" y="18" />
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="CustomRezFrame">
-						<Offset x="20" y="0" />
-					</Anchor>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent" x="0" y="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" justifyH="CENTER" justifyV="MIDDLE" parentKey="text">
+							<FontHeight val="14" />
+							<Size>
+								<AbsDimension x="1400" y="16" />
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$parent" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- Buttons (Lock|Close) 
+						 (On|Random|Channel)-->
+
+			<!-- Close Button -->
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="buttonClose">
+				<Size x="18" y="18" />
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent" x="-2" y="-2" />
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:RegisterForClicks("LeftButtonUp")
-					</OnLoad>
 					<OnClick>
-						CustomRez.SpeechButtonOnClick(self,button,down)
+						crHider();
 					</OnClick>
 					<OnEnter>
-						CustomRez.ShowToolTip(self,2)
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:ClearLines();
+						GameTooltip:SetText("Close");
+						GameTooltip:AddLine("Click to Hide CustomRez v2 options.");
+						GameTooltip:Show();
+
+						crMouseOnEnter();
 					</OnEnter>
 					<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-				</Scripts>
-				<NormalTexture file="Interface\BUTTONS\UI-GuildButton-MOTD-Up" />
-			</Button>
-			<Button name="CrezRandomToggleButton" inherits="" frameStrata="MEDIUM" enableMouse="true" text="">
-				<Size>
-					<AbsDimension x="20" y="20" />
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="CustomRezFrame">
-						<Offset x="40" y="0" />
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-							self:RegisterForClicks("LeftButtonDown")
-						</OnLoad>
-					<OnClick>
-					CustomRez.RandomToggleOnClick(self,button,down)
-						</OnClick>
-						<OnEnter>
-						CustomRez.ShowToolTip(self,3)
-					</OnEnter>
-					<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-				</Scripts>
-				<NormalTexture file="Interface\BUTTONS\UI-GroupLoot-Dice-Up" />
-			</Button>
-			<Button name="CrezHideButton" frameStrata="MEDIUM" enableMouse="true">
-				<Size>
-					<AbsDimension x="20" y="20" />
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="CustomRezFrame">
-						<Offset x="60" y="0" />
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-							self:RegisterForClicks("LeftButtonUp")
-						</OnLoad>
-					<OnClick>
-					CustomRez.HideButtonOnClick(self,button,down)
-						</OnClick>
-						<OnEnter>
-						CustomRez.ShowToolTip(self,4)
-					</OnEnter>
-					<OnLeave>
-				GameTooltip:Hide();
+						GameTooltip:Hide();
+
+						crMouseOnLeave();
 					</OnLeave>
 				</Scripts>
-				<NormalTexture file="Interface\BUTTONS\UI-MinusButton-Up" />
 			</Button>
-			<Button name="CrezActivate" frameStrata="MEDIUM" enableMouse="true">
-				<Size>
-					<AbsDimension x="20" y="20" />
-				</Size>
+
+			<!-- Lock -->
+			<CheckButton name="$parentButtonLock" parentKey="buttonLock">
+				<Size x="18" y="18" />
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="CustomRezFrame" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="0" />
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent" x="-14" y="-2" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						crLocker();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:ClearLines();
+						GameTooltip:SetText("Lock");
+						GameTooltip:AddLine("Click to lock CustomRez v2 options.");
+						GameTooltip:Show();
+
+						crMouseOnEnter();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+
+						crMouseOnLeave();
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\LockButton-Locked-Up"/>
+				<PushedTexture file="Interface\Buttons\LockButton-Unlocked-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\LockButton-Unlocked-Up"/>
+			</CheckButton>
+			
+			<!-- Active Button -->
+			<CheckButton name="$parentActivateButton" parentKey="buttonActive">
+				<Size x="18" y="18" />
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent" x="2" y="3" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						crActivationButton();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:ClearLines();
+						GameTooltip:SetText("Activate");
+						GameTooltip:AddLine("Click to activate CustomRez v2.");
+						GameTooltip:Show();
+
+						crMouseOnEnter();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+
+						crMouseOnLeave();
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\BUTTONS\UI-GroupLoot-Pass-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\BUTTONS\UI-CheckBox-Check"/>
+			</CheckButton>
+
+			<!-- Random Button -->
+			<CheckButton name="$parentRandomButton" parentKey="buttonRandom">
+				<Size x="18" y="18" />
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent" x="20" y="3" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						crRandomToggle();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:ClearLines();
+						GameTooltip:SetText("Random Message");
+						GameTooltip:AddLine("Click to engauge randomized message.");
+						GameTooltip:Show();
+
+						crMouseOnEnter();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+
+						crMouseOnLeave();
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\BUTTONS\UI-GroupLoot-Dice-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\BUTTONS\UI-CheckBox-Check"/>
+			</CheckButton>
+
+			<!-- Channel Button -->
+			<Button name="$parentSpeechButton" inherits="UIDropDownMenuTemplate" parentKey="buttonSpeech">
+				<Size x="18" y="18" />
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent" x="25" y="0" />
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-							self:RegisterForClicks("LeftButtonUp")
-						</OnLoad>
+						UIDropDownMenu_Initialize(self, crSpeechDropDown_OnLoad);
+						<!--UIDropDownMenu_SetText(CustomRezFrameSpeechButton, CustomRezVars.ChannelWanted); -->
+					</OnLoad>
 					<OnClick>
-							CustomRez.ActivationButtonOnClick(self,button,down)
-						</OnClick>
-						<OnEnter>
-						CustomRez.ShowToolTip(self,1)
+						crSpeechButton_OnClick(self);
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:ClearLines();
+						GameTooltip:SetText("Pick Channel");
+						GameTooltip:AddLine("Pick channel to output to.");
+						GameTooltip:Show();
+
+						crMouseOnEnter();
 					</OnEnter>
 					<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+						GameTooltip:Hide();
+
+						crMouseOnLeave();
+					</OnLeave>
 				</Scripts>
-				<NormalTexture file="Interface\BUTTONS\UI-CheckBox-Check" />
 			</Button>
 		</Frames>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString name="FontString1" inherits="GameFontNormal" text="CustomRez">
-					<Size>
-						<AbsDimension x="80" y="20" />
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="0" y="0" />
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Scripts>
 			<OnLoad>
-				CustomRez.OnLoad(self)
+				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnEvent>
-				CustomRez.OnEvent(self,event,...)
-			</OnEvent>
 			<OnDragStart>
-				self:StartMoving()
+				self:StartMoving();
 			</OnDragStart>
 			<OnDragStop>
-				self:StopMovingOrSizing()
+				self:StopMovingOrSizing();
 			</OnDragStop>
-		</Scripts>
-	</Frame>
-	<Frame name="CRezSpeechDropDownMenu" inherits="UIDropDownMenuTemplate" frameStrata="FULLSCREEN">
-		<Backdrop />
-		<Scripts>
-			<OnLoad>
-				CustomRez.SpeechDropDownOnLoad(self)
-			</OnLoad>
+			<OnEnter>
+				crMouseOnEnter();
+			</OnEnter>
+			<OnLeave>
+				crMouseOnLeave();
+			</OnLeave>
 		</Scripts>
 	</Frame>
 </Ui>
