@@ -18,6 +18,46 @@ local addon = "CustomRezv2"
 local CustomRez = {}
 local Regen = true
 
+-- Main Frame Setup
+local crFrame = CF("Frame", "crFrame", UIParent)
+crFrame:SetWidth(200)
+crFrame:SetHeight(60)
+crFrame:SetPoint("CENTER", UIParent, "CENTER")
+crFrame:SetMovable(true)
+crFrame:EnableMouse(true)
+crFrame:SetClampedToScreen(true)
+
+-- Main Frame Background
+local crTex = crFrame:CreateTexture("crTex")
+crTex:SetAllPoints()
+crTex:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Background")
+
+-- Main Frame 
+crFrame:SetScript("OnMouseDown", function(self, button)
+  if button == "LeftButton" and not self.isMoving then
+   self:StartMoving();
+   self.isMoving = true;
+  end
+end)
+crFrame:SetScript("OnMouseUp", function(self, button)
+  if button == "LeftButton" and self.isMoving then
+   self:StopMovingOrSizing();
+   self.isMoving = false;
+  end
+end)
+crFrame:SetScript("OnHide", function(self)
+  if ( self.isMoving ) then
+   self:StopMovingOrSizing();
+   self.isMoving = false;
+  end
+end)
+crFrame:SetScript("OnEnter", function(self)
+	crMouseOverEnter();
+end)
+crFrame:SetScript("OnLeave", function(self)
+	crMouseOverLeave();
+end)
+
 -- Rez and Mass Rez spellIDs
 local priest_rez = GetSpellInfo(2006)
 local priest_mass_rez = GetSpellInfo(212036) 
@@ -45,9 +85,10 @@ CustomRez.Spelltbl = {
 	["DRUID_REZ"] = druid_rez,
 	["DRUID_MASS_REZ"] = druid_mass_rez,
 	["MONK_REZ"] = monk_rez,
-	["MONK_MASS_REZ"] = monk_mass_rez,
+	["MONK_MASS_REZ"] = monk_mass_rez
 }
 
+-- Event handling
 local crEvents_table = {}
 crEvents_table.eventFrame = CF("Frame");
 crEvents_table.eventFrame:RegisterEvent("ADDON_LOADED");
@@ -56,14 +97,13 @@ crEvents_table.eventFrame:SetScript("OnEvent", function(self, event, ...)
 	crEvents_table.eventFrame[event](self, ...);
 end);
 
+-- First load settings
 function crEvents_table.eventFrame:ADDON_LOADED(AddOn)
 	--print(AddOn)
 	if AddOn ~= addon then
 		return
 	end
 	crEvents_table.eventFrame:UnregisterEvent("ADDON_LOADED")
-
-	CustomRezFrame.title.text:SetText(GetAddOnMetadata(addon, "Title") .. " " .. GetAddOnMetadata(addon, "Version"))
 
 	local defaults = {
 		["crLock"] = true,
@@ -93,6 +133,136 @@ function crEvents_table.eventFrame:ADDON_LOADED(AddOn)
 
 	crInitialize()
 end
+
+-- Top Level Frames (title|lock|close)
+-- Title Line
+crFrame.title = crFrame:CreateFontString("$parentTitle", "OVERLAY", "GameFontNormalSmall")
+crFrame.title:SetPoint("TOPLEFT", crFrame, "TOPLEFT", 6, -8)
+crFrame.title:SetText(GetAddOnMetadata(addon, "Title") .. " " .. GetAddOnMetadata(addon, "Version"))
+
+-- Close Button
+crFrame.close = CF("Button", "$parentCloseButton", crFrame, "UIPanelCloseButton")
+crFrame.close:SetSize(20, 20)
+crFrame.close:SetPoint("TOPRIGHT", crFrame, "TOPRIGHT", -2, -2)
+crFrame.close:SetScript("OnEnter", function(self)
+	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+	GameTooltip:ClearLines();
+	GameTooltip:SetText("Close");
+	GameTooltip:AddLine("Click to Hide CustomRez v2 options.");
+	GameTooltip:Show();
+	crMouseOverEnter();
+end)
+crFrame.close:SetScript("OnLeave", function(self)
+	GameTooltip:Hide();
+	crMouseOverLeave();
+end)
+
+-- Lock Button
+crFrame.lock = CF("CheckButton", "$parentLockButton", crFrame, "SecureActionButtonTemplate")
+crFrame.lock:SetSize(20, 20)
+crFrame.lock:SetPoint("TOPRIGHT", crFrameCloseButton, "TOPLEFT", 2, 0)
+crFrame.lock:SetNormalTexture("Interface\\Buttons\\LockButton-Locked-Up")
+crFrame.lock:SetPushedTexture("Interface\\Buttons\\LockButton-Unlocked-Up")
+crFrame.lock:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight", "ADD")
+crFrame.lock:SetCheckedTexture("Interface\\Buttons\\LockButton-Unlocked-Down")
+crFrame.lock:SetScript("OnClick", function(self)
+	crLocker();
+end)
+crFrame.lock:SetScript("OnEnter", function(self)
+	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+	GameTooltip:ClearLines();
+	GameTooltip:SetText("Lock");
+	GameTooltip:AddLine("Click to Lock CustomRez v2 options.");
+	GameTooltip:Show();
+	crMouseOverEnter();
+end)
+crFrame.lock:SetScript("OnLeave", function(self)
+	GameTooltip:Hide();
+	crMouseOverLeave();
+end)
+
+-- Bottom Level Frames (Activate|Randomize|Channel)
+-- Activate Button
+crFrame.activate = CF("CheckButton", "$parentActivateButton", crFrame, "SecureActionButtonTemplate")
+crFrame.activate:SetSize(24, 24)
+crFrame.activate:SetPoint("BOTTOMLEFT", crFrame, "BOTTOMLEFT", 2, 2)
+crFrame.activate:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Up")
+crFrame.activate:SetPushedTexture("Interface\\Buttons\\UI-CheckBox-Down")
+crFrame.activate:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+crFrame.activate:SetCheckedTexture("Interface\\BUTTONS\\UI-CheckBox-Check")
+crFrame.activate:SetScript("OnClick", function(self)
+	crActivationButton();
+end)
+crFrame.activate:SetScript("OnEnter", function(self)
+	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+	GameTooltip:ClearLines();
+	GameTooltip:SetText("Activate");
+	GameTooltip:AddLine("Click to Activate CustomRez v2.");
+	GameTooltip:Show();
+	crMouseOverEnter();
+end)
+crFrame.activate:SetScript("OnLeave", function(self)
+	GameTooltip:Hide();
+	crMouseOverLeave();
+end)
+
+-- Randomize Button
+crFrame.random = CF("CheckButton", "$parentRandomButton", crFrame, "SecureActionButtonTemplate")
+crFrame.random:SetSize(24, 24)
+crFrame.random:SetPoint("BOTTOMLEFT", crFrameActivateButton, "BOTTOMRIGHT", 2, 0)
+crFrame.random:SetNormalTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Up")
+crFrame.random:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+crFrame.random:SetCheckedTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
+crFrame.random:SetScript("OnClick", function(self)
+	crRandomToggle();
+end)
+crFrame.random:SetScript("OnEnter", function(self)
+	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+	GameTooltip:ClearLines();
+	GameTooltip:SetText("Randomizer");
+	GameTooltip:AddLine("Click to Activate randomize Rez messages.");
+	GameTooltip:Show();
+	crMouseOverEnter();
+end)
+crFrame.random:SetScript("OnLeave", function(self)
+	GameTooltip:Hide();
+	crMouseOverLeave();
+end)
+
+-- Cahnnel DropDownMenu Button
+crFrame.channel = CF("Frame", "$parentSpeechButton", crFrame, "UIDropDownMenuTemplate")
+crFrame.channel:SetPoint("BOTTOMRIGHT", crFrame, "BOTTOMRIGHT", -118, 0)
+local info = {}
+crFrame.channel.initialize = function()
+	wipe(info)
+
+	local names = {"Say Aloud", "Yell Aloud", "Party Chat", "Raid Chat"}
+	local chats = {"SAY", "YELL", "PARTY", "RAID"}
+
+	for i, chat in next, chats do
+		info.text = names[i]
+		info.value = chat
+		info.func = function(self)
+			CustomRezVars.ChannelWanted = self.value
+			crFrameSpeechButtonText:SetText(self:GetText())
+			--print(self.value)
+		end
+		info.checked = chat == CustomRezVars.ChannelWanted
+		UIDropDownMenu_AddButton(info)
+	end
+end
+crFrame.channel:SetScript("OnEnter", function(self)
+	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+	GameTooltip:ClearLines();
+	GameTooltip:SetText("Pick Channel");
+	GameTooltip:AddLine("Pick channel to output to.");
+	GameTooltip:Show();
+	crMouseOverEnter();
+end)
+crFrame.channel:SetScript("OnLeave", function(self)
+	GameTooltip:Hide();
+	crMouseOverLeave();
+end)
 
 --RANDOM MESSAGES--
 --here you can change the messages to your liking. always keep the current format or it wont work. if you want to include your class, either write it literaly or check message #17. don't forget the commas ( , ) after each messages, even the last. check wowwiki.com for usable characters and special characters.
@@ -378,26 +548,29 @@ function crInitialize()
 	if CustomRezVars.Activated == true then
 		crEvents_table.eventFrame:RegisterEvent("UNIT_SPELLCAST_SENT")
 		print("Activated UNIT_SPELLCAST_SENT")
-		CustomRezFrameActivateButton:SetChecked(true)
+		crFrame.activate:SetChecked(true)
 	end
 	crEvents_table.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 	crEvents_table.eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 
-	CustomRezFrame:SetScale(CustomRezVars.crScale)
+	crFrame:SetScale(CustomRezVars.crScale)
 
-	if englishClass ~= "DRUID" or englishClass ~= "PALADIN" or englishClass ~= "PRIEST" or englishClass ~= "SHAMAN" or englishClass ~= "MONK" then
+
+	crFrameSpeechButtonText:SetText(CustomRezVars.ChannelWanted)
+
+	if englishClass == "DRUID" or englishClass == "PALADIN" or englishClass == "PRIEST" or englishClass == "SHAMAN" or englishClass == "MONK" then
+		crFrame:Show()
+	elseif crHide == false then
 		-- Hide
 		print("Not a healer class, frame hidden.")
-		CustomRezFrame:Hide()
-		crHide = false
-	elseif crHide == false then
-		CustomRezFrame:Show()
+		crFrame:Hide()
+		crHide = true
 	else
-		CustomRezFrame:Show()
+		crFrame:Show()
 	end
 
 	if CustomRezVars.crMouseOver == true then
-		CustomRezFrame:SetAlpha(CustomRezVars.crAlpha)
+		crFrame:SetAlpha(CustomRezVars.crAlpha)
 	else
 		--
 	end
@@ -408,9 +581,10 @@ end
 --------------------------------------------------------
 --button and frames fonctions
 
---drop down menu
+--[[drop down menu
 local info = {}
-function crSpeechDropDown_OnLoad(self)	
+function crSpeechDropDown_OnLoad(self)
+	UIDropDownMenu_SetText(crFrameSpeechButton, CustomRezVars.ChannelWanted)
 	-- Say
 	info.text = "say";
 	
@@ -474,7 +648,7 @@ end
 
 function crSpeechButton_OnClick(self)
 	ToggleDropDownMenu(1, nil, crSpeechDropDownMenu, self:GetName(), 0, 0);
-end
+end]]
 
 
 --dice button
@@ -490,24 +664,24 @@ end
 
 --hide button
 function crHider()
-	if CustomRezFrame:IsVisible() then
-		CustomRezFrame:Hide()
+	if crFrame:IsVisible() then
+		crFrame:Hide()
 		crHide = true
 	else
-		CustomRezFrame:Show()
+		crFrame:Show()
 		crHide = false
 	end
 end
 
-function crMouseOnEnter()
+function crMouseOverEnter()
 	if CustomRezVars.crMouseOver == true then
-		CustomRezFrame:SetAlpha(1);
+		crFrame:SetAlpha(1);
 	end
 end
 
-function crMouseOnLeave()
+function crMouseOverLeave()
 	if CustomRezVars.crMouseOver == true then
-		CustomRezFrame:SetAlpha(CustomRezVars.crAlpha);
+		crFrame:SetAlpha(CustomRezVars.crAlpha);
 	end
 end
 
@@ -515,13 +689,13 @@ function crLocker()
 	-- Remember crLock is backwards. true for unlocked and false for locked
 	if CustomRezVars.crLock == true then
 		CustomRezVars.crLock = false
-		CustomRezFrame.buttonLock:SetChecked(false)
-		CustomRezFrame:EnableMouse(CustomRezVars.crLock)
+		crFrame.buttonLock:SetChecked(false)
+		crFrame:EnableMouse(CustomRezVars.crLock)
 		ChatFrame1:AddMessage("CustomRez v2 |cffff0000locked|r!")
 	elseif CustomRezVars.crLock == false then
 		CustomRezVars.crLock = true
-		CustomRezFrame.buttonLock:SetChecked(true)
-		CustomRezFrame:EnableMouse(CustomRezVars.crLock)
+		crFrame.buttonLock:SetChecked(true)
+		crFrame:EnableMouse(CustomRezVars.crLock)
 		ChatFrame1:AddMessage("CustomRez v2 |cffff0000unlocked|r!")
 	end
 end
@@ -534,11 +708,11 @@ end
 --activation button
 function crActivationButton()
 	if CustomRezVars.Activated == true then
-		CustomRezFrame:UnregisterEvent("UNIT_SPELLCAST_SENT")
+		crEvents_table.eventFrame:UnregisterEvent("UNIT_SPELLCAST_SENT")
 		ChatFrame1:AddMessage("CustomRez: desactivated")
 		CustomRezVars.Activated = false
 	elseif CustomRezVars.Activated == false then
-		CustomRezFrame:RegisterEvent("UNIT_SPELLCAST_SENT")
+		crEvents_table.eventFrame:RegisterEvent("UNIT_SPELLCAST_SENT")
 		ChatFrame1:AddMessage("CustomRez: activated")
 		CustomRezVars.Activated = true
 	end

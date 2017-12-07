@@ -8,4 +8,4 @@
 ## Notes: Rez Messages for Rezzers Reloaded
 ## SavedVariablesPerCharacter: CustomRezVars
 
-CustomRezv2.xml
+CustomRezv2.lua
