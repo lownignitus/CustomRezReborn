@@ -681,15 +681,15 @@ SLASH_CUSTOMREZV21, SLASH_CUSTOMREZV22, SLASH_CUSTOMREZV23, SLASH_CUSTOMREZV24 =
 ----------------------------------------------------
 --Checks preffered channel and depending on situation, automatically sets it to the next logcal channel raid -> party -> say
 function crSetChannel()
-	if CustomRezVars.ChannelWanted == "RAID" and GetRealNumRaidMembers() == 0 then
-		if GetRealNumPartyMembers() > 0 then
+	if CustomRezVars.ChannelWanted == "RAID" and GetNumGroupMembers() == 0 then
+		if GetNumGroupMembers() > 0 then
 			CustomRez_channel = "PARTY"
 			--SELECTED_CHAT_FRAME:AddMessage("auto switch to party from raid");
 		else
 			CustomRez_channel = "SAY"
 			--SELECTED_CHAT_FRAME:AddMessage("auto switch to say from raid");
 		end
-	elseif CustomRezVars.ChannelWanted == "PARTY" and GetRealNumPartyMembers() == 0 then
+	elseif CustomRezVars.ChannelWanted == "PARTY" and GetNumGroupMembers() == 0 then
 		CustomRez_channel = "SAY"
 		--SELECTED_CHAT_FRAME:AddMessage("auto switch to say from party");
 	else
