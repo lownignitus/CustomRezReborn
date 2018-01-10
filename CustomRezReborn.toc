@@ -1,5 +1,5 @@
 ## Interface: 70300
-## Title: CustomRezv2
+## Title: CustomRezReborn
 ## Author: LownIgnitus (Alexstrasza US)
 ## Version: v1.0.0
 ## X-Date: 
@@ -8,4 +8,4 @@
 ## Notes: Rez Messages for Rezzers Reloaded
 ## SavedVariablesPerCharacter: CustomRezVars
 
-CustomRezv2.lua
+CustomRezReborn.lua

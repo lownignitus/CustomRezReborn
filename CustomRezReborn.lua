@@ -12,7 +12,7 @@
 ----------------------------------------------------
 ----------------------------------------------------
 CF = CreateFrame
-local addon = "CustomRezv2"
+local addon = "CustomRezReborn"
 --print(addon .. " has been loaded.")
 --Set up table
 local CustomRez = {}
