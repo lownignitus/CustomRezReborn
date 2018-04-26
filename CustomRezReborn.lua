@@ -70,11 +70,6 @@ local druid_mass_rez = GetSpellInfo(212040)
 local monk_rez = GetSpellInfo(115178)
 local monk_mass_rez = GetSpellInfo(212051)
 
---[[CalssIndex = 0 = none, 1 = Warrior,	2 = Paladin, 3 = Hunter, 4 = Rogue, 5 = Priest,
-	6 = DK, 7 = Shaman, 8 = Mage, 9 = Warlock, 10 = Monk, 11 = Druid, 12 = DH]]
-local localClass, englishClass, classIndex = UnitClass("player")
---print(englishClass)
-
 CustomRez.Spelltbl = {
 	["PRIEST_REZ"] = priest_rez,
 	["PRIEST_MASS_REZ"] = priest_mass_rez,
@@ -263,6 +258,11 @@ crFrame.channel:SetScript("OnLeave", function(self)
 	GameTooltip:Hide();
 	crMouseOverLeave();
 end)
+
+--[[CalssIndex = 0 = none, 1 = Warrior,	2 = Paladin, 3 = Hunter, 4 = Rogue, 5 = Priest,
+6 = DK, 7 = Shaman, 8 = Mage, 9 = Warlock, 10 = Monk, 11 = Druid, 12 = DH]]
+local localClass, englishClass, classIndex = UnitClass("player")
+print(englishClass)
 
 --RANDOM MESSAGES--
 --here you can change the messages to your liking. always keep the current format or it wont work. if you want to include your class, either write it literaly or check message #17. don't forget the commas ( , ) after each messages, even the last. check wowwiki.com for usable characters and special characters.
@@ -560,13 +560,14 @@ function crInitialize()
 
 	if englishClass == "DRUID" or englishClass == "PALADIN" or englishClass == "PRIEST" or englishClass == "SHAMAN" or englishClass == "MONK" then
 		crFrame:Show()
-	elseif crHide == false then
+		CustomRezVars.crHide = false
+		CustomRezVars.Activated = true
+	else
 		-- Hide
 		print("Not a healer class, frame hidden.")
 		crFrame:Hide()
-		crHide = true
-	else
-		crFrame:Show()
+		CustomRezVars.Activated = false
+		CustomRezVars.crHide = true
 	end
 
 	if CustomRezVars.crMouseOver == true then
@@ -595,10 +596,10 @@ end
 function crHider()
 	if crFrame:IsVisible() then
 		crFrame:Hide()
-		crHide = true
+		CustomRezVars.crHide = true
 	else
 		crFrame:Show()
-		crHide = false
+		CustomRezVars.crHide = false
 	end
 end
 
