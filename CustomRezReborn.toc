@@ -1,7 +1,7 @@
-## Interface: 70300
+## Interface: 90500
 ## Title: CustomRezReborn
 ## Author: LownIgnitus (Alexstrasza US)
-## Version: v1.0.0
+## Version: v1.1.0
 ## X-Date: 
 ## X-Creator: Fannia (Lothar US)
 ## X-Credits: Lomig (Kael'Thas EU/FR) & Tarcalion (Nagrand US/Oceanic) -> Necrosis ; Algarana - Rashgaroth ( EU - Alliance ) & Kaeldra of Aegwynn -> Serenity

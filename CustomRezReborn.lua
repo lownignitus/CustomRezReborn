@@ -1,6 +1,6 @@
 ﻿---------------------------------------
 ---------------------------------------------------
---CustomRez
+--CustomRez Reborn v1.1.0
 --Author : Fannia (Lothar US)
 --Description : Sends funny random messages or a simple useful message when you use a resurrection spell.
 --Inspired by : Serenity (messages and main idea), Necrosis (function to substitute names in messages)
@@ -58,29 +58,17 @@ crFrame:SetScript("OnLeave", function(self)
 	crMouseOverLeave();
 end)
 
--- Rez and Mass Rez spellIDs
-local priest_rez = GetSpellInfo(2006)
-local priest_mass_rez = GetSpellInfo(212036) 
-local pally_rez = GetSpellInfo(7328)
-local pally_mass_rez = GetSpellInfo(212056)
-local shammy_rez = GetSpellInfo(2008)
-local shammy_mass_rez = GetSpellInfo(212048)
-local druid_rez = GetSpellInfo(50769)
-local druid_mass_rez = GetSpellInfo(212040)
-local monk_rez = GetSpellInfo(115178)
-local monk_mass_rez = GetSpellInfo(212051)
-
 CustomRez.Spelltbl = {
-	["PRIEST_REZ"] = priest_rez,
-	["PRIEST_MASS_REZ"] = priest_mass_rez,
-	["PALLY_REZ"] = pally_rez,
-	["PALLY_MASS_REZ"] = pally_mass_rez,
-	["SHAMMY_REZ"] = shammy_rez,
-	["SHAMMY_MASS_REZ"] = shammy_mass_rez,
-	["DRUID_REZ"] = druid_rez,
-	["DRUID_MASS_REZ"] = druid_mass_rez,
-	["MONK_REZ"] = monk_rez,
-	["MONK_MASS_REZ"] = monk_mass_rez
+	["PRIEST_REZ"] = 2006, -- Resurrection
+	["PRIEST_MASS_REZ"] = 212036, -- Mass Resurrection
+	["PALLY_REZ"] = 7328, -- Redemption
+	["PALLY_MASS_REZ"] = 212056, -- Absolution
+	["SHAMMY_REZ"] = 2008, -- Ancestral Spirit
+	["SHAMMY_MASS_REZ"] = 212048, -- Ancestral Vision
+	["DRUID_REZ"] = 50769, -- Revive
+	["DRUID_MASS_REZ"] = 212040, -- Revitalize
+	["MONK_REZ"] = 115178, -- Resuscitate
+	["MONK_MASS_REZ"] = 212051, -- Reawaken
 }
 
 -- Event handling
@@ -544,7 +532,7 @@ CustomRez.RESURECTIONsimple = {
 }
 
 function crInitialize()
-	--print("In crInitialize")
+	print("In crInitialize")
 	if CustomRezVars.Activated == true then
 		crEvents_table.eventFrame:RegisterEvent("UNIT_SPELLCAST_SENT")
 		print("Activated UNIT_SPELLCAST_SENT")
@@ -648,8 +636,10 @@ function crActivationButton()
 	end
 end
 	
+SLASH_CUSTOMREZREBORN1, SLASH_CUSTOMREZREBORN2, SLASH_CUSTOMREZREBORN3, SLASH_CUSTOMREZREBORN4 = '/customrez', '/crez', '/Customrez', '/CustomRez';
+
 -- functions associated with Slash commands
-function MyAddonCommands(msg, editbox)
+SlashCmdList["CUSTOMREZREBORN"] = function(msg, editbox)
 	if msg == "toggle" then
 		crActivationButton()
 	elseif msg == "info" then
@@ -665,7 +655,7 @@ function MyAddonCommands(msg, editbox)
 		crSetChannel()
 		ChatFrame1:AddMessage("CustomRez will now display in "..msg.." if possible")
 	else
-		ChatFrame1:AddMessage("CustomRez v2 by LownIgnitus.")
+		ChatFrame1:AddMessage("CustomRez Reborn by LownIgnitus.")
 		ChatFrame1:AddMessage("CustomRez originally by Fannia. Messages in most part from Serenity")
 		ChatFrame1:AddMessage("Available commands are :");
 		ChatFrame1:AddMessage(" - toggle : turn CustomRez messages on or off");
@@ -674,10 +664,6 @@ function MyAddonCommands(msg, editbox)
 		ChatFrame1:AddMessage(" - say, yell, party, raid : sets the prefered channel. if channel is unavailable, uses the next logical channel. i.e if you choose raid but you're only in a party, it will display in party chat. if you aren't even in a party, it will display in say");
 	end
 end
-
-SlashCmdList["CUSTOMREZV2"] = MyAddonCommands
-
-SLASH_CUSTOMREZV21, SLASH_CUSTOMREZV22, SLASH_CUSTOMREZV23, SLASH_CUSTOMREZV24 = '/customrez', '/crez', '/Customrez', '/CustomRez';
 
 ----------------------------------------------------
 --Checks preffered channel and depending on situation, automatically sets it to the next logcal channel raid -> party -> say
@@ -714,24 +700,24 @@ end
 --core of it
 function crEvents_table.eventFrame:UNIT_SPELLCAST_SENT(...)
 	--print("In UNIT_SPELLCAST_SENT")
-	local unitId, spell, rank, target = ...
-	--print(event)
+	local unit, target, castGUID, spellID = ...
+	--print(...)
 	if Regen == true and CustomRezVars.Activated == true then
-		--print(unitID,spell,rank,target)
-		--SELECTED_CHAT_FRAME:AddMessage("casting"..spell);
+		--print(unit, target, castGUID, spellID)
+		--SELECTED_CHAT_FRAME:AddMessage("casting"..spellID);
 		
 		--WHY DOESN'T IT WORK WITH REVIVE?!!
-		if spell == CustomRez.Spelltbl.PRIEST_REZ or spell == CustomRez.Spelltbl.SHAMMY_REZ or spell== CustomRez.Spelltbl.PALLY_REZ or spell == CustomRez.Spelltbl.DRUID_REZ or spell == CustomRez.Spelltbl.MONK_REZ then
+		if spellID == CustomRez.Spelltbl.PRIEST_REZ or spellID == CustomRez.Spelltbl.SHAMMY_REZ or spellID == CustomRez.Spelltbl.PALLY_REZ or spellID == CustomRez.Spelltbl.DRUID_REZ or spellID == CustomRez.Spelltbl.MONK_REZ then
 			--print("spell recognized");
 			if CustomRezVars.SimpleMessage == true then
 				--SELECTED_CHAT_FRAME:AddMessage("simple message");
-				crSimpleRezMsg(spell, target)
+				crSimpleRezMsg(spellID, target)
 			elseif CustomRezVars.SimpleMessage == false then
 				--SELECTED_CHAT_FRAME:AddMessage("random message");
 				crRandomRezMsg(target)
 			end
-		elseif spell == CustomRez.Spelltbl.DRUID_MASS_REZ or spell == CustomRez.Spelltbl.PRIEST_MASS_REZ or spell == CustomRez.Spelltbl.PALLY_MASS_REZ or spell == CustomRez.Spelltbl.SHAMMY_MASS_REZ or spell == CustomRez.Spelltbl.MONK_MASS_REZ then
-			crSimpleRezMsg(spell, target)
+		elseif spellID == CustomRez.Spelltbl.DRUID_MASS_REZ or spellID == CustomRez.Spelltbl.PRIEST_MASS_REZ or spellID == CustomRez.Spelltbl.PALLY_MASS_REZ or spellID == CustomRez.Spelltbl.SHAMMY_MASS_REZ or spellID == CustomRez.Spelltbl.MONK_MASS_REZ then
+			crSimpleRezMsg(spellID, target)
 		end
 	end
 end
