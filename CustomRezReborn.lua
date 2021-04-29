@@ -1,6 +1,6 @@
 ﻿---------------------------------------
 ---------------------------------------------------
---CustomRez Reborn v1.1.0
+--CustomRez Reborn v1.1.1
 --Author : Fannia (Lothar US)
 --Description : Sends funny random messages or a simple useful message when you use a resurrection spell.
 --Inspired by : Serenity (messages and main idea), Necrosis (function to substitute names in messages)
@@ -59,17 +59,25 @@ crFrame:SetScript("OnLeave", function(self)
 end)
 
 CustomRez.Spelltbl = {
+	["DEATHKNIGHT_BREZ"] = 61999, --Raise Ally
+	["DRUID_BREZ"] = 20484, -- Rebirth
+	["DRUID_REZ"] = 50769, -- Revive
+	["DRUID_MASS_REZ"] = 212040, -- Revitalize
+	["MONK_REZ"] = 115178, -- Resuscitate
+	["MONK_MASS_REZ"] = 212051, -- Reawaken
 	["PRIEST_REZ"] = 2006, -- Resurrection
 	["PRIEST_MASS_REZ"] = 212036, -- Mass Resurrection
 	["PALLY_REZ"] = 7328, -- Redemption
 	["PALLY_MASS_REZ"] = 212056, -- Absolution
 	["SHAMMY_REZ"] = 2008, -- Ancestral Spirit
 	["SHAMMY_MASS_REZ"] = 212048, -- Ancestral Vision
-	["DRUID_REZ"] = 50769, -- Revive
-	["DRUID_MASS_REZ"] = 212040, -- Revitalize
-	["MONK_REZ"] = 115178, -- Resuscitate
-	["MONK_MASS_REZ"] = 212051, -- Reawaken
+	["WARLOCK_BREZ"] = 20707, -- Soul Stone
 }
+
+--[[ClassIndex = 0 = none, 1 = Warrior,	2 = Paladin, 3 = Hunter, 4 = Rogue, 5 = Priest,
+6 = DK, 7 = Shaman, 8 = Mage, 9 = Warlock, 10 = Monk, 11 = Druid, 12 = DH]]
+local localClass, englishClass, classIndex = UnitClass("player")
+--print(englishClass)
 
 -- Event handling
 local crEvents_table = {}
@@ -247,14 +255,9 @@ crFrame.channel:SetScript("OnLeave", function(self)
 	crMouseOverLeave();
 end)
 
---[[CalssIndex = 0 = none, 1 = Warrior,	2 = Paladin, 3 = Hunter, 4 = Rogue, 5 = Priest,
-6 = DK, 7 = Shaman, 8 = Mage, 9 = Warlock, 10 = Monk, 11 = Druid, 12 = DH]]
-local localClass, englishClass, classIndex = UnitClass("player")
-print(englishClass)
-
 --RANDOM MESSAGES--
 --here you can change the messages to your liking. always keep the current format or it wont work. if you want to include your class, either write it literaly or check message #17. don't forget the commas ( , ) after each messages, even the last. check wowwiki.com for usable characters and special characters.
-CustomRez.RESURECTIONsimple = {
+CustomRez.RESURECTIONcustom = {
   	"Granddaddy always said laughter was the best medicine. I guess it wasn't strong enough to keep <target> alive.",
 	"Okay, <target>, nap time is over! Back to work!",
 	"Rezzing <target>. Can I get an 'amen', please!",
@@ -303,7 +306,7 @@ CustomRez.RESURECTIONsimple = {
 	"<target>, you have been weighed, you have been measured, and too bad, there wasn't any coffin we could fit you in so apparently you can't die yet.",
 	"Well <target>, you tried your best...and apparently failed miserably. Good job.", 
 	"Did it hurt, <target>, when you fell from Heaven? Oh, wait...You're dead...hmmm...I don't know where I was going with that. Nevermind.", 
-	"Gah, <target>, dead again? You probably want a rez, don't you? What do you think I am, a "..strsub(localClass,1,3).."... oh. Fair enough.",
+	"Gah, <target>, dead again? You probably want a rez, don't you? What do you think I am, a "..localClass.."... oh. Fair enough.",
 	"<target> have you heard of Nethaera?  Yeah, she's really cool.  Why do I bring it up?  No reason.",
 	"Can somebody get <target> a Phoenix Down over here? *stumbles* Wow, out of body experience...",
 	"Funny how everyone else can die and come back, but a Phoenix Down won't take care of <target>.",
@@ -532,10 +535,10 @@ CustomRez.RESURECTIONsimple = {
 }
 
 function crInitialize()
-	print("In crInitialize")
+	--print("In crInitialize")
 	if CustomRezVars.Activated == true then
 		crEvents_table.eventFrame:RegisterEvent("UNIT_SPELLCAST_SENT")
-		print("Activated UNIT_SPELLCAST_SENT")
+		--print("Activated UNIT_SPELLCAST_SENT")
 		crFrame.activate:SetChecked(true)
 	end
 	crEvents_table.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -545,14 +548,14 @@ function crInitialize()
 
 
 	crFrameSpeechButtonText:SetText(CustomRezVars.ChannelWanted)
-
-	if englishClass == "DRUID" or englishClass == "PALADIN" or englishClass == "PRIEST" or englishClass == "SHAMAN" or englishClass == "MONK" then
+	
+	if classIndex == 2 or classIndex == 5 or classIndex == 6 or classIndex == 7 or classIndex == 9 or classIndex == 10 or classIndex == 11 then
 		crFrame:Show()
 		CustomRezVars.crHide = false
 		CustomRezVars.Activated = true
 	else
 		-- Hide
-		print("Not a healer class, frame hidden.")
+		print("Not a healer class, or a Brez Class, frame hidden.")
 		crFrame:Hide()
 		CustomRezVars.Activated = false
 		CustomRezVars.crHide = true
@@ -718,6 +721,17 @@ function crEvents_table.eventFrame:UNIT_SPELLCAST_SENT(...)
 			end
 		elseif spellID == CustomRez.Spelltbl.DRUID_MASS_REZ or spellID == CustomRez.Spelltbl.PRIEST_MASS_REZ or spellID == CustomRez.Spelltbl.PALLY_MASS_REZ or spellID == CustomRez.Spelltbl.SHAMMY_MASS_REZ or spellID == CustomRez.Spelltbl.MONK_MASS_REZ then
 			crSimpleRezMsg(spellID, target)
+
+		end
+	elseif Regen == false and CustomRezVars.Activated == true then
+		if spellID == CustomRez.Spelltbl.DEATHKNIGHT_BREZ or spellID == CustomRez.Spelltbl.DRUID_BREZ or spellID == CustomRez.Spelltbl.WARLOCK_BREZ then
+			if CustomRezVars.SimpleMessage == true then
+				--SELECTED_CHAT_FRAME:AddMessage("simple message");
+				crSimpleRezMsg(spellID, target)
+			elseif CustomRezVars.SimpleMessage == false then
+				--SELECTED_CHAT_FRAME:AddMessage("random message");
+				crRandomRezMsg(target)
+			end
 		end
 	end
 end
@@ -746,9 +760,9 @@ function crRandomRezMsg(target)
 	--where the randomness takes place
 	local randmsg, r, l = "", 0, 0
 	
-	l = table.getn(CustomRez.RESURECTIONsimple)
+	l = table.getn(CustomRez.RESURECTIONcustom)
 	r = math.random(l)
-	randmsg = CustomRez.RESURECTIONsimple[r]
+	randmsg = CustomRez.RESURECTIONcustom[r]
 	randmsg = crMsgReplace(randmsg, target)
 	--SELECTED_CHAT_FRAME:AddMessage("lenght table : "..tostring(l));
 	--SELECTED_CHAT_FRAME:AddMessage("random number : "..tostring(r));
