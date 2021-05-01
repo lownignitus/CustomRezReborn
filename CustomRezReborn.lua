@@ -316,7 +316,7 @@ CustomRez.RESURECTIONcustom = {
 	"<target>, prove me i'm not making a mistake by rezzing you...",
 	"You're lucky i like you <target>",
 	"Rezzing <target> before he gets a tea-bag from everyone in the group. Oups...too late :p",
-	"Haiku time!\nThere was a monster\n<target> stood there\n<Player> rezzed <target>.",
+	"Haiku time! There was a monster, <target> stood there, <Player> rezzed <target>.",
 	"You know <target>, as much as i hate to say it, watching you die made me smile, laugh, hug my cat, adopt an orphan and reach a higher elevation of the mind. You are worthy to come back.",
 	"<target> - all that time-- ...there he was. Just standing there. Regenerating 5, health. Per. Second.",
 	"<target> - STONECLAW TOTEM - STONE AND CLAW COMBINED. CAN YOU TAKE IT?",
