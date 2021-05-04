@@ -720,7 +720,8 @@ function crEvents_table.eventFrame:UNIT_SPELLCAST_SENT(...)
 				crRandomRezMsg(target)
 			end
 		elseif spellID == CustomRez.Spelltbl.DRUID_MASS_REZ or spellID == CustomRez.Spelltbl.PRIEST_MASS_REZ or spellID == CustomRez.Spelltbl.PALLY_MASS_REZ or spellID == CustomRez.Spelltbl.SHAMMY_MASS_REZ or spellID == CustomRez.Spelltbl.MONK_MASS_REZ then
-			crSimpleRezMsg(spellID, target)
+			local link = GetSpellLink(spellID)
+			crSimpleRezMsg(link, target)
 
 		end
 	elseif Regen == false and CustomRezVars.Activated == true then
